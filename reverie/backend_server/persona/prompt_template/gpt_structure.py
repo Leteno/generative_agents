@@ -4,11 +4,13 @@ Author: Joon Sung Park (joonspk@stanford.edu)
 File: gpt_structure.py
 Description: Wrapper functions for calling OpenAI APIs.
 """
+import dotenv
 import json
 import random
 import openai
 import time 
 
+from openai import AzureOpenAI
 from utils import *
 
 openai.api_key = openai_api_key
@@ -18,9 +20,11 @@ def temp_sleep(seconds=0.1):
 
 def ChatGPT_single_request(prompt): 
   temp_sleep()
-
-  completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo", 
+  azure_openai = AzureOpenAI(api_key=openai_api_key,
+                            api_base=dotenv.get_key(dotenv.find_dotenv(), "AZURE_ENDPOINT"),
+                            api_version="2024-06-01-preview")
+  completion = azure_openai.ChatCompletion.create(
+    model="gpt-4o",
     messages=[{"role": "user", "content": prompt}]
   )
   return completion["choices"][0]["message"]["content"]
